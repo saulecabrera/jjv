@@ -1,0 +1,9 @@
+[package]
+name = "jjv"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1.0.86"
+brotli = "6.0.0"
+wasmparser = "0.210.0"
