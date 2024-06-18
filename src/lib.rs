@@ -8,6 +8,10 @@ static CUSTOM_SECTION: &'static str = "javy_source";
 
 pub fn extract(path: &PathBuf) -> Result<Option<Vec<u8>>> {
     let bytes = std::fs::read(&path)?;
+    from_wasm_bytes(&bytes)
+}
+
+pub fn from_wasm_bytes(bytes: &[u8]) -> Result<Option<Vec<u8>>> {
     let parser = Parser::new(0);
     let mut contents: Vec<u8> = vec![];
 
