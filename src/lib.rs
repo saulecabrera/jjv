@@ -13,23 +13,30 @@ pub fn extract(path: &PathBuf) -> Result<Option<Vec<u8>>> {
 
 pub fn from_wasm_bytes(bytes: &[u8]) -> Result<Option<Vec<u8>>> {
     let parser = Parser::new(0);
-    let mut contents: Vec<u8> = vec![];
+    let mut result: Vec<u8> = vec![];
 
     for payload in parser.parse_all(&bytes) {
         match payload? {
             CustomSection(reader) => {
                 if reader.name() == CUSTOM_SECTION {
-                    let compressed: Vec<u8> = reader.data().into();
-                    let mut cursor = Cursor::new(compressed);
-                    BrotliDecompress(&mut cursor, &mut contents)?;
+                    let original: Vec<u8> = reader.data().into();
+
+                    let mut cursor = Cursor::new(original.clone());
+                    match BrotliDecompress(&mut cursor, &mut result) {
+                        Ok(_) => {}
+                        Err(_) => {
+                            result = original;
+                        }
+                    }
+                    break;
                 }
             }
             _ => {}
         }
     }
 
-    if contents.len() > 0 {
-        Ok(Some(contents))
+    if result.len() > 0 {
+        Ok(Some(result))
     } else {
         Ok(None)
     }

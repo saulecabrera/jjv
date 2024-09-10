@@ -3,9 +3,6 @@
 //! Inspects Javy generated WebAssembly modules and prints original JavaScript
 //! source.
 //!
-//! TODO: Javy can generate uncompressed modules, therefore, we should avoid
-//! defaulting to using brotli unconditionally.
-//!
 //! Usage
 //!
 //! ```rust
@@ -13,12 +10,25 @@
 //! ```
 
 use anyhow::Result;
+use clap::Parser;
 use jjv::extract;
+use std::path::PathBuf;
+
+#[derive(Debug, Parser)]
+#[command(
+    name = "jjv",
+    version,
+    about = "Javy JavaScript Source Code Viewer",
+    long_about = None
+)]
+pub struct Cli {
+    #[arg(value_name = "INPUT", required = true)]
+    pub path: PathBuf,
+}
 
 fn main() -> Result<()> {
-    let args: Vec<String> = std::env::args().collect();
-    let path = args[1].clone();
-    if let Ok(Some(contents)) = extract(&path.into()) {
+    let args = Cli::parse();
+    if let Ok(Some(contents)) = extract(&args.path) {
         println!("{}", String::from_utf8(contents)?);
     } else {
         println!("No JavaScript source found");

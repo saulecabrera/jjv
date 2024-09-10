@@ -6,4 +6,5 @@ edition = "2021"
 [dependencies]
 anyhow = "1.0.86"
 brotli = "6.0.0"
+clap = { version = "4.5.17", features = ["derive"] }
 wasmparser = "0.210.0"
